@@ -1,0 +1,24 @@
+{
+  "playlists": [
+    {
+      "pid": 200,
+      "name": "Night Walk",
+      "tracks": [
+        {
+          "track_uri": "spotify:track:A",
+          "track_name": "Alpha",
+          "artist_name": "Artist 1",
+          "album_name": "Album X",
+          "pos": 0
+        },
+        {
+          "track_uri": "spotify:track:C",
+          "track_name": "Gamma",
+          "artist_name": "Artist 3",
+          "album_name": "Album Z",
+          "pos": 1
+        }
+      ]
+    }
+  ]
+}

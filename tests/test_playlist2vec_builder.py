@@ -1,0 +1,37 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from pachamix_data.builders.playlist_events import build_playlist_events
+
+
+FIXTURES = Path(__file__).parent / "fixtures" / "playlist2vec"
+
+
+def test_build_playlist_events_reads_playlist2vec_exports(tmp_path: Path) -> None:
+    result = build_playlist_events(
+        mpd_json=FIXTURES,
+        output_dir=tmp_path / "playlist_outputs",
+    )
+
+    assert result.events.shape == (4, 7)
+    assert result.events.columns == [
+        "playlist_id",
+        "playlist_name",
+        "track_uri",
+        "track_name",
+        "artist_name",
+        "album_name",
+        "position",
+    ]
+
+    rows = result.events.sort(["playlist_id", "position"]).to_dicts()
+    assert rows[0]["playlist_name"] == "Focus Mode"
+    assert rows[0]["track_uri"] == "playlist2vec:track:1"
+    assert rows[3]["track_name"] == "Gamma"
+
+    popularity = {
+        row["track_uri"]: row["playlist_count"]
+        for row in result.track_popularity.to_dicts()
+    }
+    assert popularity["playlist2vec:track:1"] == 2

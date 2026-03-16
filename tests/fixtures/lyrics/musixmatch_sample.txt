@@ -1,0 +1,3 @@
+TR001,love:3,night:1,bright:2
+TR002,love:1,night:4,storm:2
+TR003,bright:1,calm:6

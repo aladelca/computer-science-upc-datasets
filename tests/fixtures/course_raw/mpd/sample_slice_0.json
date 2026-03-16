@@ -1,0 +1,24 @@
+{
+  "playlists": [
+    {
+      "pid": 100,
+      "name": "Focus Mode",
+      "tracks": [
+        {
+          "track_uri": "spotify:track:A",
+          "track_name": "Alpha",
+          "artist_name": "Artist 1",
+          "album_name": "Album X",
+          "pos": 0
+        },
+        {
+          "track_uri": "spotify:track:B",
+          "track_name": "Beta",
+          "artist_name": "Artist 2",
+          "album_name": "Album Y",
+          "pos": 1
+        }
+      ]
+    }
+  ]
+}
