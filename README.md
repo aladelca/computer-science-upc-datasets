@@ -48,6 +48,8 @@ Detailed source notes are documented in [big_data_dataset_generation_plan.md](./
 
 The processed schema reference is documented in [data_dictionary.md](./data_dictionary.md).
 
+The student-oriented quickstart is documented in [STUDENT_GUIDE.md](./STUDENT_GUIDE.md).
+
 Operational instructions are documented in [runbooks/README.md](./runbooks/README.md).
 
 ## Runtime Note
@@ -66,6 +68,8 @@ python3 -m venv .venv
 ## Student Package
 
 The distribution name is `upc-datasets`.
+
+If you want the shortest student path, read [STUDENT_GUIDE.md](./STUDENT_GUIDE.md).
 
 Local development install:
 
