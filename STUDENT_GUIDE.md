@@ -68,6 +68,40 @@ dictionary = upc_datasets.get_data_dictionary()
 print(dictionary.keys())
 ```
 
+### Load a dataset directly
+
+```python
+import upc_datasets
+
+lyrics = upc_datasets.load_dataset(
+    "pachamix_lyrics_long",
+    root="/path/to/course-project-or-processed-dir",
+)
+print(lyrics.shape)
+```
+
+By default, `load_dataset()` returns a `polars.DataFrame`.
+
+If you prefer lazy execution:
+
+```python
+import upc_datasets
+
+lyrics_lazy = upc_datasets.load_dataset("pachamix_lyrics_long", lazy=True)
+print(lyrics_lazy.collect_schema())
+```
+
+`root=` can point to either:
+
+- the project root that contains `data/processed/`
+- the directory that directly contains the parquet files
+
+If you do not want to pass `root=` in every notebook, set:
+
+```bash
+export UPC_DATASETS_ROOT=/path/to/course-project-or-processed-dir
+```
+
 ## CLI
 
 ### List datasets
@@ -96,7 +130,19 @@ upc-datasets show-data-dictionary
 
 ## Load the Processed Data
 
-If the professor shares the generated parquet files, students can load them directly with `polars`:
+If the professor shares the generated parquet files, students can load them directly with `upc_datasets.load_dataset()` or plain `polars`:
+
+```python
+import upc_datasets
+
+audio = upc_datasets.load_dataset("pachamix_audio_core")
+lyrics = upc_datasets.load_dataset("pachamix_lyrics_long")
+
+print(audio.shape)
+print(lyrics.shape)
+```
+
+Or directly with `polars`:
 
 ```python
 import polars as pl

@@ -5,6 +5,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+import polars as pl
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -57,3 +60,61 @@ def test_upc_datasets_cli_lists_datasets() -> None:
     assert result.returncode == 0, result.stderr
     assert "pachamix_audio_core" in result.stdout
     assert "pachamix_lyrics_long" in result.stdout
+
+
+def test_upc_datasets_load_dataset_reads_from_project_root(tmp_path: Path) -> None:
+    import upc_datasets
+
+    output_path = tmp_path / "data" / "processed" / "pachamix_audio_core.parquet"
+    output_path.parent.mkdir(parents=True)
+    expected = pl.DataFrame(
+        {
+            "track_id": [101, 202],
+            "title": ["River Echo", "Andes Loop"],
+            "artist_name": ["Mathias", "Yunguri"],
+        }
+    )
+    expected.write_parquet(output_path)
+
+    loaded = upc_datasets.load_dataset("pachamix_audio_core", root=tmp_path)
+
+    assert loaded.shape == (2, 3)
+    assert loaded.to_dict(as_series=False) == expected.to_dict(as_series=False)
+
+
+def test_upc_datasets_load_dataset_uses_env_root_and_can_return_lazy_frame(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    import upc_datasets
+
+    processed_root = tmp_path / "course_outputs"
+    output_path = processed_root / "pachamix_lyrics_long.parquet"
+    output_path.parent.mkdir(parents=True)
+    pl.DataFrame(
+        {
+            "msd_track_id": ["TR1", "TR1"],
+            "token": ["llama", "playlist"],
+            "count": [2, 1],
+        }
+    ).write_parquet(output_path)
+    monkeypatch.setenv("UPC_DATASETS_ROOT", str(processed_root))
+
+    loaded = upc_datasets.load_dataset("pachamix_lyrics_long", lazy=True)
+
+    assert isinstance(loaded, pl.LazyFrame)
+    assert loaded.collect().shape == (2, 3)
+
+
+def test_upc_datasets_load_dataset_raises_helpful_error_when_dataset_file_is_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import upc_datasets
+
+    monkeypatch.delenv("UPC_DATASETS_ROOT", raising=False)
+
+    with pytest.raises(FileNotFoundError) as excinfo:
+        upc_datasets.load_dataset("pachamix_playlist_events", root=ROOT / "tests" / "fixtures")
+
+    assert "pachamix_playlist_events" in str(excinfo.value)
+    assert "UPC_DATASETS_ROOT" in str(excinfo.value)

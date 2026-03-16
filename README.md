@@ -93,6 +93,26 @@ lyrics = upc_datasets.get_dataset_definition("pachamix_lyrics_long")
 print(lyrics["grain"])
 ```
 
+Load a generated parquet dataset with `polars`:
+
+```python
+import upc_datasets
+
+lyrics = upc_datasets.load_dataset(
+    "pachamix_lyrics_long",
+    root="/path/to/course-project-or-processed-dir",
+)
+print(lyrics.shape)
+```
+
+`load_dataset()` returns a `polars.DataFrame` by default. Pass `lazy=True` to get a `polars.LazyFrame`.
+
+If you do not want to pass `root=` every time, set:
+
+```bash
+export UPC_DATASETS_ROOT=/path/to/course-project-or-processed-dir
+```
+
 CLI usage:
 
 ```bash

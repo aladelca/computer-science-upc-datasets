@@ -13,6 +13,7 @@ from upc_datasets.catalog import (
     get_dataset_definition,
     list_datasets,
 )
+from upc_datasets.loader import load_dataset
 
 __all__ = [
     "__version__",
@@ -24,4 +25,5 @@ __all__ = [
     "get_data_dictionary",
     "get_dataset_definition",
     "list_datasets",
+    "load_dataset",
 ]
