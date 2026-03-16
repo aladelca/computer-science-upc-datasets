@@ -93,6 +93,15 @@ lyrics = upc_datasets.get_dataset_definition("pachamix_lyrics_long")
 print(lyrics["grain"])
 ```
 
+Show the student-facing data dictionary in English, Spanish, or bilingual mode:
+
+```python
+import upc_datasets
+
+print(upc_datasets.show_dataset_definition("pachamix_lyrics_long", language="bilingual"))
+print(upc_datasets.show_data_dictionary(language="es"))
+```
+
 Load a generated parquet dataset with `polars`:
 
 ```python
@@ -107,16 +116,44 @@ print(lyrics.shape)
 
 `load_dataset()` returns a `polars.DataFrame` by default. Pass `lazy=True` to get a `polars.LazyFrame`.
 
+If the dataset is not present locally, download it first:
+
+```python
+import upc_datasets
+
+audio = upc_datasets.load_dataset("pachamix_audio_core", download=True)
+lyrics = upc_datasets.load_dataset("pachamix_lyrics_long", download=True)
+```
+
+You can also download explicitly:
+
+```python
+import upc_datasets
+
+path = upc_datasets.download_dataset("pachamix_audio_core")
+print(path)
+```
+
 If you do not want to pass `root=` every time, set:
 
 ```bash
 export UPC_DATASETS_ROOT=/path/to/course-project-or-processed-dir
 ```
 
+Download settings:
+
+- default download source: latest GitHub release assets from `aladelca/computer-science-upc-datasets`
+- default cache directory: `~/.cache/upc_datasets`
+- override release base URL with `UPC_DATASETS_BASE_URL`
+- override cache directory with `UPC_DATASETS_CACHE_DIR`
+
 CLI usage:
 
 ```bash
 upc-datasets list-datasets
+upc-datasets download pachamix_audio_core
+upc-datasets show-data-dictionary --format text --language bilingual
+upc-datasets show-dataset pachamix_lyrics_long --language es
 upc-datasets show-dataset pachamix_lyrics_long
 upc-datasets show-dataset pachamix_lyrics_long --format json
 upc-datasets show-data-dictionary
@@ -197,6 +234,23 @@ When either optional source is present, the same one-command build also writes:
 - `data/processed/pachamix_song_graph_edges.parquet`
 
 When both are present, the pipeline prefers `playlist2vec/`.
+
+## Shipping Datasets To Students
+
+The package does not bundle the parquet files inside the wheel.
+
+For student downloads, upload the generated parquet files as GitHub release assets using these exact filenames:
+
+- `pachamix_audio_core.parquet`
+- `pachamix_lyrics_long.parquet`
+- `playlist_events.parquet`
+- `playlist_stats.parquet`
+- `track_popularity.parquet`
+- `pachamix_song_graph_edges.parquet`
+
+By default, `upc_datasets.download_dataset()` and `load_dataset(..., download=True)` resolve those files from the latest release in:
+
+- `https://github.com/aladelca/computer-science-upc-datasets/releases/latest`
 
 ## Example Commands
 

@@ -13,7 +13,8 @@ from upc_datasets.catalog import (
     get_dataset_definition,
     list_datasets,
 )
-from upc_datasets.loader import load_dataset
+from upc_datasets.loader import download_dataset, load_dataset
+from upc_datasets.presentation import show_data_dictionary, show_dataset_definition
 
 __all__ = [
     "__version__",
@@ -22,8 +23,11 @@ __all__ = [
     "build_playlist_events",
     "build_song_graph",
     "build_course_dataset",
+    "download_dataset",
     "get_data_dictionary",
     "get_dataset_definition",
     "list_datasets",
     "load_dataset",
+    "show_data_dictionary",
+    "show_dataset_definition",
 ]

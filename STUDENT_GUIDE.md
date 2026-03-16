@@ -68,6 +68,21 @@ dictionary = upc_datasets.get_data_dictionary()
 print(dictionary.keys())
 ```
 
+### Show the data dictionary with student context
+
+```python
+import upc_datasets
+
+print(upc_datasets.show_dataset_definition("pachamix_audio_core", language="bilingual"))
+print(upc_datasets.show_data_dictionary(language="es"))
+```
+
+Supported languages:
+
+- `en`
+- `es`
+- `bilingual`
+
 ### Load a dataset directly
 
 ```python
@@ -81,6 +96,24 @@ print(lyrics.shape)
 ```
 
 By default, `load_dataset()` returns a `polars.DataFrame`.
+
+If the dataset is not present locally, let the package download it:
+
+```python
+import upc_datasets
+
+audio = upc_datasets.load_dataset("pachamix_audio_core", download=True)
+lyrics = upc_datasets.load_dataset("pachamix_lyrics_long", download=True)
+```
+
+You can also download explicitly and inspect the local parquet path:
+
+```python
+import upc_datasets
+
+path = upc_datasets.download_dataset("pachamix_audio_core")
+print(path)
+```
 
 If you prefer lazy execution:
 
@@ -102,12 +135,25 @@ If you do not want to pass `root=` in every notebook, set:
 export UPC_DATASETS_ROOT=/path/to/course-project-or-processed-dir
 ```
 
+Download configuration:
+
+- default source: latest GitHub release assets from `aladelca/computer-science-upc-datasets`
+- default cache directory: `~/.cache/upc_datasets`
+- custom base URL: `UPC_DATASETS_BASE_URL`
+- custom cache directory: `UPC_DATASETS_CACHE_DIR`
+
 ## CLI
 
 ### List datasets
 
 ```bash
 upc-datasets list-datasets
+```
+
+### Download one dataset
+
+```bash
+upc-datasets download pachamix_audio_core
 ```
 
 ### Show one dataset
@@ -126,6 +172,18 @@ upc-datasets show-dataset pachamix_lyrics_long --format json
 
 ```bash
 upc-datasets show-data-dictionary
+```
+
+### Show the full dictionary as bilingual text
+
+```bash
+upc-datasets show-data-dictionary --format text --language bilingual
+```
+
+### Show one dataset in Spanish
+
+```bash
+upc-datasets show-dataset pachamix_lyrics_long --language es
 ```
 
 ## Load the Processed Data

@@ -16,6 +16,8 @@ from upc_datasets.catalog import (
     get_dataset_definition,
     list_datasets,
 )
+from upc_datasets.loader import download_dataset
+from upc_datasets.presentation import show_data_dictionary, show_dataset_definition
 
 
 SUPPORTED_BUILDERS = (
@@ -24,24 +26,6 @@ SUPPORTED_BUILDERS = (
     "playlist-events",
     "song-graph",
 )
-
-
-def _format_dataset_text(dataset: dict[str, object]) -> str:
-    lines = [
-        f"name: {dataset['name']}",
-        f"path: {dataset['path']}",
-        f"status: {dataset['status']}",
-        f"grain: {dataset['grain']}",
-        f"description: {dataset['description']}",
-        "columns:",
-    ]
-    for column in dataset["columns"]:
-        lines.append(
-            f"- {column['name']} ({column['dtype']}): {column['description']}"
-        )
-    return "\n".join(lines)
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="upc-datasets",
@@ -51,6 +35,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("list-builders", help="List supported dataset builders.")
     subparsers.add_parser("list-datasets", help="List datasets in the packaged data dictionary.")
+
+    download_parser = subparsers.add_parser(
+        "download",
+        help="Download a packaged dataset parquet asset to a local cache or root directory.",
+    )
+    download_parser.add_argument("dataset_name")
+    download_parser.add_argument("--root")
+    download_parser.add_argument("--cache-dir")
+    download_parser.add_argument("--force", action="store_true")
 
     show_dataset_parser = subparsers.add_parser(
         "show-dataset",
@@ -62,6 +55,11 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("text", "json"),
         default="text",
     )
+    show_dataset_parser.add_argument(
+        "--language",
+        choices=("en", "es", "bilingual"),
+        default="bilingual",
+    )
 
     show_dictionary_parser = subparsers.add_parser(
         "show-data-dictionary",
@@ -69,8 +67,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     show_dictionary_parser.add_argument(
         "--format",
-        choices=("json",),
+        choices=("json", "text"),
         default="json",
+    )
+    show_dictionary_parser.add_argument(
+        "--language",
+        choices=("en", "es", "bilingual"),
+        default="bilingual",
     )
 
     audio_parser = subparsers.add_parser(
@@ -124,15 +127,27 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "list-datasets":
         print("\n".join(list_datasets()))
         return 0
+    if args.command == "download":
+        download_path = download_dataset(
+            args.dataset_name,
+            root=args.root,
+            cache_dir=args.cache_dir,
+            force=args.force,
+        )
+        print(f"downloaded {args.dataset_name} to {download_path}")
+        return 0
     if args.command == "show-dataset":
         dataset = get_dataset_definition(args.dataset_name)
         if args.format == "json":
             print(json.dumps(dataset, indent=2))
         else:
-            print(_format_dataset_text(dataset))
+            print(show_dataset_definition(args.dataset_name, language=args.language))
         return 0
     if args.command == "show-data-dictionary":
-        print(json.dumps(get_data_dictionary(), indent=2))
+        if args.format == "json":
+            print(json.dumps(get_data_dictionary(), indent=2))
+        else:
+            print(show_data_dictionary(language=args.language))
         return 0
     if args.command == "build-audio-core":
         frame = build_audio_core(
