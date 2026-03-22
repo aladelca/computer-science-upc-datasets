@@ -30,6 +30,7 @@ The package is intentionally strict:
 | 12 | [week_12_pagerank.md](./week_12_pagerank.md) |
 | 13 | [week_13_pipelines.md](./week_13_pipelines.md) |
 | 14 | [week_14_serving_monitoring_and_defense.md](./week_14_serving_monitoring_and_defense.md) |
+| Project | [semester_group_assignment_brief.md](./semester_group_assignment_brief.md) |
 
 ## Dataset Ground Truth for This Repo
 
