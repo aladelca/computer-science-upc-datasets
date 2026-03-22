@@ -18,6 +18,8 @@ Use these in order:
    How to prepare Playlist2vec exports for the one-command course build
 7. [07-package-and-publish.md](./07-package-and-publish.md)
    How to build and publish the `upc-datasets` Python package
+8. [08-how-the-package-works.md](./08-how-the-package-works.md)
+   How the package is structured, how dataset resolution works, and how publication channels are split
 
 The toolkit is intentionally focused on:
 
