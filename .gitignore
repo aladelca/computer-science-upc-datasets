@@ -7,3 +7,5 @@ big_data_course_content/.cache/
 big_data_course_content/.mplconfig/
 big_data_course_content/_classroom_artifacts/
 big_data_course_content/notebooks/.ipynb_checkpoints/
+*.parquet
+data/
