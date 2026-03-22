@@ -4,11 +4,12 @@ from pathlib import Path
 
 from pachamix_data.builders.playlist_events import build_playlist_events
 
-
 FIXTURES = Path(__file__).parent / "fixtures" / "mpd"
 
 
-def test_build_playlist_events_creates_events_and_summary_tables(tmp_path: Path) -> None:
+def test_build_playlist_events_creates_events_and_summary_tables(
+    tmp_path: Path,
+) -> None:
     output_dir = tmp_path / "playlist_outputs"
 
     result = build_playlist_events(
@@ -20,7 +21,7 @@ def test_build_playlist_events_creates_events_and_summary_tables(tmp_path: Path)
     assert result.track_popularity_path.exists()
     assert result.playlist_stats_path.exists()
 
-    assert result.events.shape == (5, 7)
+    assert result.events.shape == (5, 8)
     assert result.events.columns == [
         "playlist_id",
         "playlist_name",
@@ -29,6 +30,14 @@ def test_build_playlist_events_creates_events_and_summary_tables(tmp_path: Path)
         "artist_name",
         "album_name",
         "position",
+        "position_observed",
+    ]
+    assert result.events.get_column("position_observed").to_list() == [
+        True,
+        True,
+        True,
+        True,
+        True,
     ]
 
     popularity = {

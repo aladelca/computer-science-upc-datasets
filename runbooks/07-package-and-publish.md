@@ -48,7 +48,42 @@ dist/
 .venv/bin/python -m twine check dist/*
 ```
 
-## Step 5: Upload to TestPyPI First
+## Step 5: Stage Release Assets For The Small Package Datasets
+
+Make sure these local parquet files exist first:
+
+- `data/processed/pachamix_audio_core.parquet`
+- `data/processed/pachamix_lyrics_long.parquet`
+
+Then stage the GitHub Release assets:
+
+```bash
+.venv/bin/python -m upc_datasets.cli stage-release-assets \
+  --root . \
+  --output-dir dist/release-assets
+```
+
+Expected staged files:
+
+```text
+dist/release-assets/
+  pachamix_audio_core.parquet
+  pachamix_lyrics_long.parquet
+```
+
+## Step 6: Publish Large Datasets Through Kaggle
+
+Do not attach the large behavior-derived parquet files to the package release channel.
+Publish these through Kaggle datasets instead:
+
+- `pachamix_playlist_events.parquet`
+- `pachamix_playlist_stats.parquet`
+
+## Step 7: Upload Dataset Assets To GitHub Releases
+
+Create a GitHub release for the same package version and upload every file from `dist/release-assets/`.
+
+## Step 8: Upload to TestPyPI First
 
 ```bash
 .venv/bin/python -m twine upload --repository testpypi dist/*
@@ -56,13 +91,13 @@ dist/
 
 Then verify installation from TestPyPI in a clean environment.
 
-## Step 6: Upload to PyPI
+## Step 9: Upload to PyPI
 
 ```bash
 .venv/bin/python -m twine upload dist/*
 ```
 
-## Step 7: Smoke Test the Published Package
+## Step 10: Smoke Test the Published Package
 
 In a clean virtual environment:
 

@@ -4,7 +4,6 @@ from pathlib import Path
 
 from pachamix_data.builders.playlist_events import build_playlist_events
 
-
 FIXTURES = Path(__file__).parent / "fixtures" / "mpd" / "slices"
 
 
@@ -14,9 +13,15 @@ def test_build_playlist_events_reads_directory_of_mpd_slices(tmp_path: Path) -> 
         output_dir=tmp_path / "playlist_outputs",
     )
 
-    assert result.events.shape == (4, 7)
+    assert result.events.shape == (4, 8)
     playlist_ids = result.events.get_column("playlist_id").to_list()
     assert playlist_ids == [100, 100, 200, 200]
+    assert result.events.get_column("position_observed").to_list() == [
+        True,
+        True,
+        True,
+        True,
+    ]
 
     popularity = {
         row["track_uri"]: row["playlist_count"]

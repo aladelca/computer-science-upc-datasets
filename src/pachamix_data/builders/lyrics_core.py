@@ -36,7 +36,9 @@ def _parse_official_lines(lines: list[str]) -> list[dict[str, str | int]]:
         if not line or line.startswith("#"):
             continue
         if line.startswith("%"):
-            vocabulary = [token.strip() for token in line[1:].split(",") if token.strip()]
+            vocabulary = [
+                token.strip() for token in line[1:].split(",") if token.strip()
+            ]
             continue
         parts = [part.strip() for part in line.split(",") if part.strip()]
         if not parts:

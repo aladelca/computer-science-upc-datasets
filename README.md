@@ -151,12 +151,15 @@ CLI usage:
 
 ```bash
 upc-datasets list-datasets
+upc-datasets list-public-datasets
+upc-datasets list-kaggle-datasets
 upc-datasets download pachamix_audio_core
 upc-datasets show-data-dictionary --format text --language bilingual
 upc-datasets show-dataset pachamix_lyrics_long --language es
 upc-datasets show-dataset pachamix_lyrics_long
 upc-datasets show-dataset pachamix_lyrics_long --format json
 upc-datasets show-data-dictionary
+upc-datasets stage-release-assets --root . --output-dir dist/release-assets
 ```
 
 ## One-Command Course Build
@@ -221,6 +224,74 @@ data/raw/playlist2vec/
   track_playlist1.csv
 ```
 
+The official `Playlist2vec` source is a MySQL SQL dump published on Zenodo.
+The core playlist builder still expects exported CSV tables under `data/raw/playlist2vec/`, but the repo now ships a SQLite-based extractor so you do not need a local MySQL server just to produce them.
+
+The current supported contract is:
+
+- `playlist.csv` must contain at least:
+  - `playlist_id`
+  - `name`
+- `track.csv` must contain at least:
+  - `track_id`
+  - `track_name`
+  - `artist_name`
+  - `album_name`
+- `track_playlist1.csv` must contain at least:
+  - `playlist_id`
+  - `track_id`
+
+In the real Playlist2vec dump, `playlist_id` is a string identifier, not a numeric PID.
+
+If `track_playlist1.csv` also includes `position`, the toolkit preserves it and marks `position_observed=true`.
+If `position` is absent, the toolkit synthesizes a deterministic per-playlist position and marks `position_observed=false`.
+
+That synthesized position is suitable for:
+
+- collaborative filtering
+- popularity baselines
+- matrix factorization
+- graph construction
+
+It should **not** be treated as real playlist sequence order.
+
+If you have the official SQL dump and want the repo to extract everything for you without MySQL:
+
+```bash
+.venv/bin/python -m pachamix_data.cli extract-playlist2vec-sql \
+  --sql-dump data/raw/playlist2vec_sql/spotifydbdumpshare.sql \
+  --output-dir data/raw/playlist2vec \
+  --sqlite-db data/interim/playlist2vec.sqlite \
+  --processed-root data/processed
+```
+
+This command:
+
+- loads the relevant Playlist2vec tables into SQLite
+- exports `playlist.csv`, `track.csv`, and `track_playlist1.csv`
+- is enough to materialize the raw Playlist2vec export layer
+
+For real full-scale Playlist2vec exports, prefer the DuckDB builder for the behavior parquets:
+
+```bash
+.venv/bin/python scripts/playlist2vec/build_behavior_duckdb.py \
+  --raw-playlist2vec-dir data/raw/playlist2vec \
+  --output-dir data/processed/pachamix_playlists \
+  --db-path data/interim/playlist2vec_behavior.duckdb \
+  --temp-dir data/interim/duckdb_tmp
+```
+
+This writes:
+
+- `data/processed/pachamix_playlists/playlist_events.parquet`
+- `data/processed/pachamix_playlists/playlist_stats.parquet`
+- `data/processed/pachamix_playlists/track_popularity.parquet`
+
+For the acquisition and export workflow, see:
+
+- [Runbook 06: Prepare Playlist2vec Exports](./runbooks/06-playlist2vec-prep.md)
+- [scripts/playlist2vec/README.md](./scripts/playlist2vec/README.md)
+
 Official `MPD`:
 
 ```text
@@ -239,18 +310,43 @@ When both are present, the pipeline prefers `playlist2vec/`.
 
 The package does not bundle the parquet files inside the wheel.
 
-For student downloads, upload the generated parquet files as GitHub release assets using these exact filenames:
+The package now distinguishes the local parquet path from the public release asset name. This matters for playlist datasets because they live under `data/processed/pachamix_playlists/` locally but should be published with stable package-facing names.
+
+Current public release asset names:
 
 - `pachamix_audio_core.parquet`
 - `pachamix_lyrics_long.parquet`
-- `playlist_events.parquet`
-- `playlist_stats.parquet`
-- `track_popularity.parquet`
-- `pachamix_song_graph_edges.parquet`
+
+If those parquet files already exist locally, prepare a release-assets folder with the correct public filenames:
+
+```bash
+upc-datasets stage-release-assets --root . --output-dir dist/release-assets
+```
+
+The resulting files inside `dist/release-assets/` are the ones you should upload to GitHub Releases:
+
+- `pachamix_audio_core.parquet`
+- `pachamix_lyrics_long.parquet`
 
 By default, `upc_datasets.download_dataset()` and `load_dataset(..., download=True)` resolve those files from the latest release in:
 
 - `https://github.com/aladelca/computer-science-upc-datasets/releases/latest`
+
+Large behavior-derived datasets should not be attached to the package release channel.
+Publish them through Kaggle instead:
+
+- `pachamix_playlist_events`
+- `pachamix_playlist_stats`
+
+You can inspect that split directly from the package:
+
+```bash
+upc-datasets list-public-datasets
+upc-datasets list-kaggle-datasets
+```
+
+If you still need to stage a large dataset for an alternate mirror, call `stage-release-assets` with explicit `--dataset-name` values.
+For playlist datasets, the command also emits compatibility aliases like `playlist_events.parquet` unless you pass `--no-legacy-aliases`.
 
 ## Example Commands
 

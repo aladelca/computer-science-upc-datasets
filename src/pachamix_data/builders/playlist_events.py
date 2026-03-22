@@ -39,8 +39,18 @@ def _build_events_from_playlist2vec(path: Path) -> pl.DataFrame:
     tracks = pl.read_csv(path / "track.csv")
     memberships = pl.read_csv(path / "track_playlist1.csv")
 
-    if "position" not in memberships.columns:
-        memberships = memberships.with_row_index(name="position")
+    if "position" in memberships.columns:
+        memberships = memberships.with_columns(
+            pl.col("position").cast(pl.Int64),
+            pl.lit(True).alias("position_observed"),
+        )
+    else:
+        memberships = memberships.sort(["playlist_id", "track_id"]).with_columns(
+            (pl.col("track_id").cum_count().over("playlist_id") - 1)
+            .cast(pl.Int64)
+            .alias("position"),
+            pl.lit(False).alias("position_observed"),
+        )
 
     events = (
         memberships.join(playlists, on="playlist_id", how="left")
@@ -52,6 +62,7 @@ def _build_events_from_playlist2vec(path: Path) -> pl.DataFrame:
             pl.col("artist_name").fill_null(""),
             pl.col("album_name").fill_null(""),
             pl.col("position").cast(pl.Int64),
+            pl.col("position_observed").cast(pl.Boolean),
         )
         .select(
             [
@@ -62,6 +73,7 @@ def _build_events_from_playlist2vec(path: Path) -> pl.DataFrame:
                 "artist_name",
                 "album_name",
                 "position",
+                "position_observed",
             ]
         )
         .sort(["playlist_id", "position"])
@@ -87,6 +99,7 @@ def _build_events_from_mpd(path: Path) -> pl.DataFrame:
                         "artist_name": track.get("artist_name", ""),
                         "album_name": track.get("album_name", ""),
                         "position": int(track.get("pos", 0)),
+                        "position_observed": True,
                     }
                 )
     return pl.DataFrame(rows)
@@ -100,7 +113,11 @@ def build_playlist_events(
     destination = Path(output_dir)
 
     events = (
-        (_build_events_from_playlist2vec(input_path) if _is_playlist2vec_export(input_path) else _build_events_from_mpd(input_path))
+        (
+            _build_events_from_playlist2vec(input_path)
+            if _is_playlist2vec_export(input_path)
+            else _build_events_from_mpd(input_path)
+        )
         .sort(["playlist_id", "position"])
         .unique(
             subset=["playlist_id", "track_uri", "position"],

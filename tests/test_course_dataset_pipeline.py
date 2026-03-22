@@ -7,7 +7,6 @@ from pathlib import Path
 
 import polars as pl
 
-
 ROOT = Path(__file__).resolve().parents[1]
 RAW_FIXTURES = ROOT / "tests" / "fixtures" / "course_raw"
 
@@ -24,7 +23,9 @@ def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def test_build_course_dataset_runs_all_builders_from_one_command(tmp_path: Path) -> None:
+def test_build_course_dataset_runs_all_builders_from_one_command(
+    tmp_path: Path,
+) -> None:
     processed_root = tmp_path / "processed"
 
     result = run_cli(
@@ -44,7 +45,12 @@ def test_build_course_dataset_runs_all_builders_from_one_command(tmp_path: Path)
     assert pl.read_parquet(processed_root / "pachamix_audio_core.parquet").height == 2
     assert pl.read_parquet(processed_root / "pachamix_lyrics_long.parquet").height == 8
     assert (
-        pl.read_parquet(processed_root / "pachamix_playlists" / "playlist_events.parquet").height
+        pl.read_parquet(
+            processed_root / "pachamix_playlists" / "playlist_events.parquet"
+        ).height
         == 4
     )
-    assert pl.read_parquet(processed_root / "pachamix_song_graph_edges.parquet").height == 2
+    assert (
+        pl.read_parquet(processed_root / "pachamix_song_graph_edges.parquet").height
+        == 2
+    )

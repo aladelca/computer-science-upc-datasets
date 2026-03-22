@@ -7,7 +7,6 @@ import pytest
 
 from pachamix_data.builders.lyrics_core import build_lyrics_core
 
-
 FIXTURES = Path(__file__).parent / "fixtures" / "lyrics"
 
 
@@ -137,7 +136,9 @@ def test_build_lyrics_core_joins_track_metadata(tmp_path: Path) -> None:
     assert rows[0]["title"] == "Song One"
     assert rows[0]["artist_name"] == "Artist One"
     assert rows[0]["year"] == 2010
-    missing_metadata = frame.filter(frame["msd_track_id"] == "TR003").select(
-        ["title", "artist_name", "release"]
-    ).row(0)
+    missing_metadata = (
+        frame.filter(frame["msd_track_id"] == "TR003")
+        .select(["title", "artist_name", "release"])
+        .row(0)
+    )
     assert missing_metadata == (None, None, None)

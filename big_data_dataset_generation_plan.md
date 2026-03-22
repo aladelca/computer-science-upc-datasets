@@ -159,6 +159,17 @@ Recommended practical ingestion strategy:
 
 The toolkit is designed to ingest those exported structured tables directly.
 
+Important source note:
+
+- the official `Playlist2vec` schema documents `track_playlist1` as a track-playlist association table
+- it does not document an observed playlist-order column
+- therefore `Playlist2vec` is excellent for:
+  - collaborative filtering
+  - popularity baselines
+  - matrix factorization
+  - co-occurrence graph construction
+- but it should not be treated as a faithful sequential playlist source unless you add an explicit ordering strategy outside the raw source
+
 ## 4. Important Spotify Constraint
 
 As of `March 15, 2026`, do **not** make the semester depend on the live Spotify Web API for audio features.
@@ -290,6 +301,7 @@ Suggested columns:
 - `artist_name`
 - `album_name`
 - `position`
+- `position_observed`
 - optional `playlist_name`
 
 Recommended classroom versions:
@@ -461,6 +473,11 @@ If using Playlist2vec exports:
 2. join playlist metadata with track membership and track metadata
 3. create one row per playlist-track interaction
 
+When `Playlist2vec` does not provide observed order:
+
+4. create a deterministic technical `position` per playlist
+5. mark `position_observed = false`
+
 If using MPD:
 
 1. parse every playlist JSON slice
@@ -472,6 +489,7 @@ If using MPD:
    - `artist_name`
    - `album_name`
    - `position`
+   - `position_observed = true`
 4. concatenate all rows into one long interaction table
 5. remove exact duplicate rows if necessary
 6. compute popularity statistics:

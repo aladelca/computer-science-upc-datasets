@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import os
-import sqlite3
 import shutil
+import sqlite3
 import subprocess
 import sys
 from pathlib import Path
 
 import polars as pl
-
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_FIXTURES = ROOT / "tests" / "fixtures" / "course_raw"
@@ -161,6 +160,8 @@ def test_build_course_dataset_enriches_lyrics_with_msd_metadata(
     assert result.returncode == 0, result.stderr
     lyrics = pl.read_parquet(processed_root / "pachamix_lyrics_long.parquet")
     assert {"title", "artist_name", "release", "year"}.issubset(lyrics.columns)
-    matched_rows = lyrics.filter(lyrics["msd_track_id"] == "TR001").sort("token").to_dicts()
+    matched_rows = (
+        lyrics.filter(lyrics["msd_track_id"] == "TR001").sort("token").to_dicts()
+    )
     assert matched_rows[0]["title"] == "Fixture Song One"
     assert matched_rows[0]["artist_name"] == "Fixture Artist One"

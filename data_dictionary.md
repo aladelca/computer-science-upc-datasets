@@ -172,17 +172,36 @@ One row per unique `(msd_track_id, token)` pair, with aggregated count.
 
 One row per unique `(playlist_id, track_uri, position)`.
 
+### Important Source Note
+
+`MPD` provides observed playlist order.
+
+`Playlist2vec` official exports do **not** necessarily provide observed track order inside the playlist membership table.
+When `position` is absent at ingestion time, the builder synthesizes a deterministic per-playlist `position` and marks that fact with:
+
+- `position_observed = false`
+
+This makes the dataset suitable for:
+
+- collaborative filtering
+- popularity baselines
+- matrix factorization
+- graph construction
+
+It does **not** make the dataset a faithful sequential playlist source.
+
 ### Schema
 
 | Column | Type | Description |
 | --- | --- | --- |
-| `playlist_id` | `Int64` or source-native integer | playlist identifier |
+| `playlist_id` | `String` or `Int64` | source-native playlist identifier; actual Playlist2vec exports use string ids, while MPD commonly uses integers |
 | `playlist_name` | `String` | playlist name |
 | `track_uri` | `String` | canonical song identifier in the playlist source |
 | `track_name` | `String` | track title from the playlist source |
 | `artist_name` | `String` | artist name from the playlist source |
 | `album_name` | `String` | album name from the playlist source |
-| `position` | `Int64` | order of the song inside the playlist |
+| `position` | `Int64` | track order in the playlist; may be synthesized deterministically if not observed in the source |
+| `position_observed` | `Boolean` | `true` when order came from the source, `false` when position was synthesized during ingestion |
 
 ## Optional Dataset D: `pachamix_playlists/playlist_stats.parquet`
 
@@ -194,7 +213,7 @@ One row per playlist.
 
 | Column | Type | Description |
 | --- | --- | --- |
-| `playlist_id` | source-native integer | playlist identifier |
+| `playlist_id` | `String` or `Int64` | source-native playlist identifier; actual Playlist2vec exports use string ids, while MPD commonly uses integers |
 | `playlist_name` | `String` | playlist name |
 | `track_count` | `UInt32`/`Int64` depending on Polars output | number of songs in the playlist |
 

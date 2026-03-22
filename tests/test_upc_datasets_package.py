@@ -8,7 +8,6 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 sys.path.insert(0, str(SRC))
@@ -30,6 +29,17 @@ def test_upc_datasets_package_can_be_imported() -> None:
 
     assert upc_datasets.__version__
     assert "pachamix_audio_core" in upc_datasets.list_datasets()
+    assert upc_datasets.list_public_release_datasets() == [
+        "pachamix_audio_core",
+        "pachamix_lyrics_long",
+    ]
+    assert "pachamix_playlist_events" in upc_datasets.list_kaggle_datasets()
+    assert "pachamix_playlist_stats" in upc_datasets.list_kaggle_datasets()
+    assert "pachamix_track_popularity" not in upc_datasets.list_kaggle_datasets()
+    assert upc_datasets.get_dataset_asset_names("pachamix_playlist_events") == [
+        "pachamix_playlist_events.parquet",
+        "playlist_events.parquet",
+    ]
 
 
 def test_upc_datasets_dictionary_api_exposes_lyrics_dataset() -> None:
@@ -85,6 +95,24 @@ def test_upc_datasets_cli_lists_datasets() -> None:
     assert result.returncode == 0, result.stderr
     assert "pachamix_audio_core" in result.stdout
     assert "pachamix_lyrics_long" in result.stdout
+
+
+def test_upc_datasets_cli_lists_public_datasets() -> None:
+    result = run_cli("list-public-datasets")
+
+    assert result.returncode == 0, result.stderr
+    assert "pachamix_audio_core" in result.stdout
+    assert "pachamix_lyrics_long" in result.stdout
+    assert "pachamix_playlist_events" not in result.stdout
+
+
+def test_upc_datasets_cli_lists_kaggle_datasets() -> None:
+    result = run_cli("list-kaggle-datasets")
+
+    assert result.returncode == 0, result.stderr
+    assert "pachamix_playlist_events" in result.stdout
+    assert "pachamix_playlist_stats" in result.stdout
+    assert "pachamix_track_popularity" not in result.stdout
 
 
 def test_upc_datasets_cli_can_show_bilingual_dictionary_text() -> None:
@@ -153,7 +181,9 @@ def test_upc_datasets_load_dataset_raises_helpful_error_when_dataset_file_is_mis
     monkeypatch.delenv("UPC_DATASETS_ROOT", raising=False)
 
     with pytest.raises(FileNotFoundError) as excinfo:
-        upc_datasets.load_dataset("pachamix_playlist_events", root=ROOT / "tests" / "fixtures")
+        upc_datasets.load_dataset(
+            "pachamix_playlist_events", root=ROOT / "tests" / "fixtures"
+        )
 
     assert "pachamix_playlist_events" in str(excinfo.value)
     assert "UPC_DATASETS_ROOT" in str(excinfo.value)
@@ -192,7 +222,7 @@ def test_upc_datasets_load_dataset_can_download_when_missing(
 
     asset_dir = tmp_path / "assets"
     asset_dir.mkdir()
-    source_path = asset_dir / "playlist_events.parquet"
+    source_path = asset_dir / "pachamix_playlist_events.parquet"
     expected = pl.DataFrame(
         {
             "playlist_id": [99],
@@ -211,6 +241,140 @@ def test_upc_datasets_load_dataset_can_download_when_missing(
 
     assert loaded.shape == (1, 3)
     assert loaded.to_dict(as_series=False) == expected.to_dict(as_series=False)
+
+
+def test_upc_datasets_download_dataset_explains_kaggle_distribution(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    import upc_datasets
+
+    monkeypatch.delenv("UPC_DATASETS_BASE_URL", raising=False)
+    monkeypatch.delenv("UPC_DATASETS_PACHAMIX_PLAYLIST_EVENTS_URL", raising=False)
+    monkeypatch.delenv("UPC_DATASETS_ROOT", raising=False)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        upc_datasets.download_dataset(
+            "pachamix_playlist_events",
+            cache_dir=tmp_path / "cache",
+            force=True,
+        )
+
+    assert "Kaggle" in str(excinfo.value)
+    assert "UPC_DATASETS_BASE_URL" in str(excinfo.value)
+
+
+def test_upc_datasets_download_dataset_falls_back_to_legacy_asset_name(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    import upc_datasets
+
+    asset_dir = tmp_path / "assets"
+    asset_dir.mkdir()
+    source_path = asset_dir / "playlist_events.parquet"
+    expected = pl.DataFrame(
+        {
+            "playlist_id": [5],
+            "track_uri": ["spotify:track:legacy"],
+            "position": [0],
+        }
+    )
+    expected.write_parquet(source_path)
+
+    cache_dir = tmp_path / "cache"
+    monkeypatch.setenv("UPC_DATASETS_BASE_URL", source_path.parent.as_uri())
+
+    downloaded_path = upc_datasets.download_dataset(
+        "pachamix_playlist_events",
+        cache_dir=cache_dir,
+        force=True,
+    )
+
+    assert downloaded_path == cache_dir / "pachamix_playlist_events.parquet"
+    loaded = pl.read_parquet(downloaded_path)
+    assert loaded.to_dict(as_series=False) == expected.to_dict(as_series=False)
+
+
+def test_upc_datasets_can_stage_release_assets_with_public_filenames(
+    tmp_path: Path,
+) -> None:
+    import upc_datasets
+
+    project_root = tmp_path / "project"
+    events_path = (
+        project_root / "data" / "processed" / "pachamix_playlists" / "playlist_events.parquet"
+    )
+    stats_path = (
+        project_root / "data" / "processed" / "pachamix_playlists" / "playlist_stats.parquet"
+    )
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    pl.DataFrame(
+        {
+            "playlist_id": ["pl-1"],
+            "track_uri": ["spotify:track:test"],
+            "position": [0],
+        }
+    ).write_parquet(events_path)
+    pl.DataFrame(
+        {
+            "playlist_id": ["pl-1"],
+            "playlist_name": ["Warmup"],
+            "track_count": [1],
+        }
+    ).write_parquet(stats_path)
+
+    release_dir = tmp_path / "release-assets"
+    staged_assets = upc_datasets.stage_release_assets(
+        release_dir,
+        root=project_root,
+        dataset_names=["pachamix_playlist_events", "pachamix_playlist_stats"],
+    )
+
+    assert [asset.asset_name for asset in staged_assets] == [
+        "pachamix_playlist_events.parquet",
+        "playlist_events.parquet",
+        "pachamix_playlist_stats.parquet",
+        "playlist_stats.parquet",
+    ]
+    assert (release_dir / "pachamix_playlist_events.parquet").exists()
+    assert (release_dir / "playlist_events.parquet").exists()
+    assert (release_dir / "pachamix_playlist_stats.parquet").exists()
+    assert (release_dir / "playlist_stats.parquet").exists()
+
+
+def test_upc_datasets_cli_can_stage_release_assets(
+    tmp_path: Path,
+) -> None:
+    project_root = tmp_path / "project"
+    stats_path = (
+        project_root / "data" / "processed" / "pachamix_playlists" / "playlist_stats.parquet"
+    )
+    stats_path.parent.mkdir(parents=True, exist_ok=True)
+    pl.DataFrame(
+        {
+            "playlist_id": ["pl-7"],
+            "playlist_name": ["Evening"],
+            "track_count": [3],
+        }
+    ).write_parquet(stats_path)
+
+    release_dir = tmp_path / "release-assets"
+    result = run_cli(
+        "stage-release-assets",
+        "--root",
+        str(project_root),
+        "--output-dir",
+        str(release_dir),
+        "--dataset-name",
+        "pachamix_playlist_stats",
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "pachamix_playlist_stats.parquet" in result.stdout
+    assert "playlist_stats.parquet" in result.stdout
+    assert (release_dir / "pachamix_playlist_stats.parquet").exists()
+    assert (release_dir / "playlist_stats.parquet").exists()
 
 
 def test_upc_datasets_cli_can_download_dataset(

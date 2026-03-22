@@ -7,7 +7,6 @@ from pathlib import Path
 
 import polars as pl
 
-
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests" / "fixtures"
 

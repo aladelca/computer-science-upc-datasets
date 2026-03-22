@@ -19,11 +19,7 @@ def build_song_graph(
     input_path = Path(playlist_events_parquet)
     output_path = Path(output_parquet)
 
-    events = (
-        pl.read_parquet(input_path)
-        .select(["playlist_id", "track_uri"])
-        .unique()
-    )
+    events = pl.read_parquet(input_path).select(["playlist_id", "track_uri"]).unique()
 
     left = events.rename({"track_uri": "src_track_uri"})
     right = events.rename({"track_uri": "dst_track_uri"})
@@ -33,7 +29,10 @@ def build_song_graph(
         .filter(pl.col("src_track_uri") < pl.col("dst_track_uri"))
         .group_by(["src_track_uri", "dst_track_uri"])
         .agg(pl.len().alias("weight"))
-        .sort(["weight", "src_track_uri", "dst_track_uri"], descending=[True, False, False])
+        .sort(
+            ["weight", "src_track_uri", "dst_track_uri"],
+            descending=[True, False, False],
+        )
     )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

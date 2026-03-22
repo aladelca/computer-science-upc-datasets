@@ -15,10 +15,12 @@ from upc_datasets.catalog import (
     get_data_dictionary,
     get_dataset_definition,
     list_datasets,
+    list_kaggle_datasets,
+    list_public_release_datasets,
 )
 from upc_datasets.loader import download_dataset
 from upc_datasets.presentation import show_data_dictionary, show_dataset_definition
-
+from upc_datasets.release import stage_release_assets
 
 SUPPORTED_BUILDERS = (
     "audio-core",
@@ -26,6 +28,8 @@ SUPPORTED_BUILDERS = (
     "playlist-events",
     "song-graph",
 )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="upc-datasets",
@@ -34,7 +38,17 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command")
 
     subparsers.add_parser("list-builders", help="List supported dataset builders.")
-    subparsers.add_parser("list-datasets", help="List datasets in the packaged data dictionary.")
+    subparsers.add_parser(
+        "list-datasets", help="List datasets in the packaged data dictionary."
+    )
+    subparsers.add_parser(
+        "list-public-datasets",
+        help="List datasets intended for the package release asset channel.",
+    )
+    subparsers.add_parser(
+        "list-kaggle-datasets",
+        help="List datasets intended to be published through Kaggle rather than package release assets.",
+    )
 
     download_parser = subparsers.add_parser(
         "download",
@@ -44,6 +58,25 @@ def build_parser() -> argparse.ArgumentParser:
     download_parser.add_argument("--root")
     download_parser.add_argument("--cache-dir")
     download_parser.add_argument("--force", action="store_true")
+
+    stage_release_parser = subparsers.add_parser(
+        "stage-release-assets",
+        help="Copy local parquet outputs into a release-assets directory using public asset filenames.",
+    )
+    stage_release_parser.add_argument("--output-dir", required=True)
+    stage_release_parser.add_argument("--root")
+    stage_release_parser.add_argument(
+        "--dataset-name",
+        action="append",
+        default=[],
+        help="Dataset name to stage. Repeat to stage multiple datasets. Defaults to all public datasets.",
+    )
+    stage_release_parser.add_argument("--overwrite", action="store_true")
+    stage_release_parser.add_argument(
+        "--no-legacy-aliases",
+        action="store_true",
+        help="Stage only canonical asset names and skip compatibility aliases.",
+    )
 
     show_dataset_parser = subparsers.add_parser(
         "show-dataset",
@@ -127,6 +160,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "list-datasets":
         print("\n".join(list_datasets()))
         return 0
+    if args.command == "list-public-datasets":
+        print("\n".join(list_public_release_datasets()))
+        return 0
+    if args.command == "list-kaggle-datasets":
+        print("\n".join(list_kaggle_datasets()))
+        return 0
     if args.command == "download":
         download_path = download_dataset(
             args.dataset_name,
@@ -135,6 +174,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             force=args.force,
         )
         print(f"downloaded {args.dataset_name} to {download_path}")
+        return 0
+    if args.command == "stage-release-assets":
+        staged_assets = stage_release_assets(
+            args.output_dir,
+            root=args.root,
+            dataset_names=args.dataset_name or None,
+            overwrite=args.overwrite,
+            include_legacy_aliases=not args.no_legacy_aliases,
+        )
+        for asset in staged_assets:
+            print(
+                f"staged {asset.dataset_name} from {asset.source_path} "
+                f"to {asset.target_path}"
+            )
         return 0
     if args.command == "show-dataset":
         dataset = get_dataset_definition(args.dataset_name)
@@ -167,34 +220,40 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"wrote {frame.height} rows to {args.output_parquet}")
         return 0
     if args.command == "build-playlist-events":
-        result = build_playlist_events(
+        playlist_result = build_playlist_events(
             mpd_json=args.mpd_json,
             output_dir=args.output_dir,
         )
-        print(f"wrote {result.events.height} playlist events to {result.events_path}")
+        print(
+            f"wrote {playlist_result.events.height} playlist events to "
+            f"{playlist_result.events_path}"
+        )
         return 0
     if args.command == "build-song-graph":
-        result = build_song_graph(
+        graph_result = build_song_graph(
             playlist_events_parquet=args.playlist_events_parquet,
             output_parquet=args.output_parquet,
         )
-        print(f"wrote {result.edges.height} graph edges to {result.edges_path}")
+        print(
+            f"wrote {graph_result.edges.height} graph edges to "
+            f"{graph_result.edges_path}"
+        )
         return 0
     if args.command == "build-course-dataset":
-        result = build_course_dataset(
+        course_result = build_course_dataset(
             raw_root=args.raw_root,
             processed_root=args.processed_root,
             lyrics_top_n_tokens=args.lyrics_top_n_tokens,
         )
         print("built course datasets:")
-        print(f"- audio-core: {result.audio_core_path}")
-        print(f"- lyrics-core: {result.lyrics_core_path}")
-        if result.playlist_events_path is None:
+        print(f"- audio-core: {course_result.audio_core_path}")
+        print(f"- lyrics-core: {course_result.lyrics_core_path}")
+        if course_result.playlist_events_path is None:
             print("- playlist-events: skipped (no playlist behavior source found)")
             print("- song-graph: skipped (no playlist behavior source found)")
         else:
-            print(f"- playlist-events: {result.playlist_events_path}")
-            print(f"- song-graph: {result.song_graph_path}")
+            print(f"- playlist-events: {course_result.playlist_events_path}")
+            print(f"- song-graph: {course_result.song_graph_path}")
         return 0
 
     parser.print_help()

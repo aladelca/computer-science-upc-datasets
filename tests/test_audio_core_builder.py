@@ -6,7 +6,6 @@ import pytest
 
 from pachamix_data.builders.audio_core import build_audio_core
 
-
 FIXTURES = Path(__file__).parent / "fixtures" / "fma"
 
 
@@ -39,10 +38,7 @@ def test_build_audio_core_joins_tracks_and_features(tmp_path: Path) -> None:
 def test_build_audio_core_requires_track_identifier(tmp_path: Path) -> None:
     bad_features = tmp_path / "bad_features.csv"
     bad_features.write_text(
-        "feature,chroma\n"
-        "name,mean\n"
-        "kind,01\n"
-        "1,0.1\n",
+        "feature,chroma\nname,mean\nkind,01\n1,0.1\n",
         encoding="utf-8",
     )
 

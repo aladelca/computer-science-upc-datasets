@@ -7,6 +7,9 @@ Confirm that the toolkit and its builder flows are working correctly.
 ## Run the Full Test Suite
 
 ```bash
+.venv/bin/ruff format --check src tests scripts
+.venv/bin/ruff check src tests scripts
+.venv/bin/mypy src
 .venv/bin/pytest
 ```
 
@@ -54,6 +57,9 @@ Check that parquet files exist after each build:
 ### Playlist Events
 
 - confirm one row per `(playlist_id, track_uri, position)`
+- confirm `position_observed` exists
+- confirm `position_observed=true` for `MPD`
+- confirm `position_observed=false` when `Playlist2vec` exports did not include real order
 - confirm playlist counts and popularity summaries look reasonable
 
 ### Song Graph

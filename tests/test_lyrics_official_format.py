@@ -4,7 +4,6 @@ from pathlib import Path
 
 from pachamix_data.builders.lyrics_core import build_lyrics_core
 
-
 FIXTURES = Path(__file__).parent / "fixtures" / "lyrics" / "official"
 
 

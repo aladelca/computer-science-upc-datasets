@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal, cast
 
 from upc_datasets.catalog import get_dataset_definition, list_datasets
-
 
 Language = Literal["en", "es", "bilingual"]
 
 LABELS = {
     "dataset": {"en": "Dataset", "es": "Conjunto de datos"},
     "path": {"en": "Path", "es": "Ruta"},
+    "asset_name": {"en": "Asset Name", "es": "Nombre del asset"},
     "status": {"en": "Status", "es": "Estado"},
     "grain": {"en": "Grain", "es": "Granularidad"},
     "description": {"en": "Description", "es": "Descripcion"},
@@ -72,22 +72,23 @@ TRANSLATIONS = {
     },
     "pachamix_playlist_events": {
         "grain_es": "una fila por (playlist_id, track_uri, position)",
-        "description_es": "Tabla de pertenencia a playlists usada para filtrado colaborativo y construccion de grafos.",
+        "description_es": "Tabla de pertenencia a playlists usada para filtrado colaborativo y construccion de grafos. Cuando la fuente no provee orden observado, la posicion se sintetiza de forma determinista por playlist y se marca con position_observed=false.",
         "columns": {
-            "playlist_id": "Identificador de playlist.",
+            "playlist_id": "Identificador nativo de la playlist segun la fuente; en Playlist2vec suele ser texto y en MPD suele ser entero.",
             "playlist_name": "Nombre de la playlist.",
             "track_uri": "Identificador canonico de la pista segun la fuente de playlists.",
             "track_name": "Titulo de la pista segun la fuente de playlists.",
             "artist_name": "Nombre del artista segun la fuente de playlists.",
             "album_name": "Nombre del album segun la fuente de playlists.",
             "position": "Orden de la pista dentro de la playlist.",
+            "position_observed": "Indica si la posicion proviene de la fuente original (true) o si fue sintetizada de forma determinista durante la ingesta (false).",
         },
     },
     "pachamix_playlist_stats": {
         "grain_es": "una fila por playlist",
         "description_es": "Tabla resumen al nivel de playlist.",
         "columns": {
-            "playlist_id": "Identificador de playlist.",
+            "playlist_id": "Identificador nativo de la playlist segun la fuente; en Playlist2vec suele ser texto y en MPD suele ser entero.",
             "playlist_name": "Nombre de la playlist.",
             "track_count": "Numero de pistas en la playlist.",
         },
@@ -136,7 +137,7 @@ def _value(english: str, spanish: str, language: Language) -> str:
 def show_dataset_definition(name: str, language: Language = "bilingual") -> str:
     _validate_language(language)
     dataset = get_dataset_definition(name)
-    translation = TRANSLATIONS.get(name, {})
+    translation = cast(dict[str, Any], TRANSLATIONS.get(name, {}))
 
     status_en = str(dataset["status"])
     status_es = STATUS_LABELS.get(status_en, {}).get("es", status_en)
@@ -148,6 +149,7 @@ def show_dataset_definition(name: str, language: Language = "bilingual") -> str:
     lines = [
         f"{_label('dataset', language)}: {dataset['name']}",
         f"{_label('path', language)}: {dataset['path']}",
+        f"{_label('asset_name', language)}: {dataset.get('asset_name', dataset['path'].split('/')[-1])}",
         f"{_label('status', language)}: {_value(status_en, status_es, language)}",
         f"{_label('grain', language)}: {_value(grain_en, grain_es, language)}",
         f"{_label('description', language)}: {_value(description_en, description_es, language)}",
@@ -156,7 +158,7 @@ def show_dataset_definition(name: str, language: Language = "bilingual") -> str:
         f"{_label('columns', language)}:",
     ]
 
-    column_translations = translation.get("columns", {})
+    column_translations = cast(dict[str, str], translation.get("columns", {}))
     for column in dataset["columns"]:
         description_en = str(column["description"])
         description_es = column_translations.get(column["name"], description_en)
@@ -168,7 +170,9 @@ def show_dataset_definition(name: str, language: Language = "bilingual") -> str:
     feature_families = dataset.get("feature_families", [])
     if feature_families:
         lines.append(f"{_label('feature_families', language)}:")
-        family_translations = translation.get("feature_families", {})
+        family_translations = cast(
+            dict[str, str], translation.get("feature_families", {})
+        )
         for family in feature_families:
             description_en = str(family["description"])
             description_es = family_translations.get(family["family"], description_en)
@@ -193,6 +197,8 @@ def show_dataset_definition(name: str, language: Language = "bilingual") -> str:
 
 def show_data_dictionary(language: Language = "bilingual") -> str:
     _validate_language(language)
-    sections = [show_dataset_definition(name, language=language) for name in list_datasets()]
+    sections = [
+        show_dataset_definition(name, language=language) for name in list_datasets()
+    ]
     separator = "\n\n" + ("=" * 80) + "\n\n"
     return separator.join(sections)

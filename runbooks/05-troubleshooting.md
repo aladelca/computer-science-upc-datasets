@@ -91,6 +91,39 @@ data/raw/playlist2vec/
 
 - rerun the one-command build
 
+## Problem: My `Playlist2vec` Export Does Not Have `position`
+
+Cause:
+
+- the official Zenodo schema for `track_playlist1` only includes `track_id` and `playlist_id`
+
+What to do:
+
+- do not invent semantic sequence order manually unless you have a real ordered source
+- let the builder synthesize a deterministic technical `position`
+- use the resulting dataset for:
+  - collaborative filtering
+  - popularity baselines
+  - matrix factorization
+  - graph construction
+- do not use synthesized order as if it were the real last-track order of the playlist
+
+## Problem: The `track.csv` Export Creates Duplicate Rows Per Track
+
+Cause:
+
+- `Playlist2vec` can have multiple artists per track through `track_artist1`
+
+What to do:
+
+- export one row per `track_id`
+- aggregate artist names deterministically, for example with `GROUP_CONCAT(... ORDER BY ...)`
+- keep the export contract stable for the builder:
+  - `track_id`
+  - `track_name`
+  - `artist_name`
+  - `album_name`
+
 ## Problem: Outputs Were Written but Look Wrong
 
 What to check:

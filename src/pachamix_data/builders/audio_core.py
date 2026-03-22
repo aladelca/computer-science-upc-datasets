@@ -7,7 +7,6 @@ from typing import Iterable
 
 import polars as pl
 
-
 PREFERRED_TRACK_COLUMNS = (
     "track_id",
     "title",

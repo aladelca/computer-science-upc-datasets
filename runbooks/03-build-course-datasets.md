@@ -126,6 +126,12 @@ Recommended use:
 - popularity baselines
 - graph input generation
 
+Important source note:
+
+- official `Playlist2vec` exports are suitable for set-based recommendation and graph analytics
+- if the exported `track_playlist1.csv` does not contain `position`, the builder synthesizes a deterministic per-playlist order and marks `position_observed=false`
+- that synthesized order should not be treated as real playlist sequence for “last-k” continuation tasks
+
 ## Optional MPD Path
 
 If you already have `MPD` JSON slices, the same command still works.

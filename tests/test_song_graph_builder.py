@@ -5,7 +5,6 @@ from pathlib import Path
 from pachamix_data.builders.playlist_events import build_playlist_events
 from pachamix_data.builders.song_graph import build_song_graph
 
-
 FIXTURES = Path(__file__).parent / "fixtures" / "mpd"
 
 

@@ -1,13 +1,30 @@
 [project]
 name = "upc-datasets"
-version = "0.5.0"
+version = "0.6.0"
 description = "Student-facing structured dataset toolkit for the UPC big data course."
 readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  {name = "Carlos Adrian Alarcon"},
+]
+keywords = ["upc", "datasets", "education", "big-data", "polars"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
 dependencies = [
   "polars>=1.0.0",
   "pyarrow>=14.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/aladelca/computer-science-upc-datasets"
+Repository = "https://github.com/aladelca/computer-science-upc-datasets"
+Issues = "https://github.com/aladelca/computer-science-upc-datasets/issues"
+Releases = "https://github.com/aladelca/computer-science-upc-datasets/releases"
 
 [project.scripts]
 upc-datasets = "upc_datasets.cli:main"
@@ -16,6 +33,9 @@ pachamix-data = "pachamix_data.cli:main"
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0.0",
+  "ruff>=0.6.0",
+  "mypy>=1.10.0",
+  "duckdb>=1.5.0",
 ]
 
 [build-system]
@@ -28,3 +48,18 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src"]
+ignore_missing_imports = true
+show_error_codes = true
+warn_unused_configs = true
