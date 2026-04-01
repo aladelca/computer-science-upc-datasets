@@ -18,6 +18,24 @@
 Students must discover that more variables do not automatically imply more usable information.
 This week is the first major mathematical warning shot of the course.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "Excellent. More dimensions means more nuance."
+>
+> Yunguri: "And also more ways for distance to become useless."
+>
+> Mathias: "So the nearest neighbor may not be near?"
+>
+> Yunguri: "Now you are finally being harmed by geometry in the correct way."
+>
+> Mathias: "But we standardized the features."
+>
+> Yunguri: "Good. Now the distances are consistently misleading."
+>
+> Mathias: "So more features can mean less useful signal?"
+>
+> Yunguri: "Precisely. Welcome to high-dimensional disappointment."
+
 ## Dataset Anchor in This Repo
 
 ### Audio space

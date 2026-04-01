@@ -31,6 +31,24 @@ Mathias wants "an app that recommends songs." Yunguri insists on five prior ques
 
 The correct intellectual mood is disciplined skepticism.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "If the file opens, it is small data."
+>
+> Yunguri: "If your definition of scale depends on your laptop's emotional stability, we are already in danger."
+>
+> Mathias: "So Big Data is when the computer suffers?"
+>
+> Yunguri: "More precisely: when the suffering forces a change in method."
+>
+> Mathias: "Then my folder named `final_final_v8` is a data architecture?"
+>
+> Yunguri: "No. That is a cry for governance."
+>
+> Mathias: "So volume, velocity, and variety are the real villains?"
+>
+> Yunguri: "Add veracity, and now you have an executive summary of avoidable pain."
+
 ## Dataset Anchor in This Repo
 
 Use `pachamix_audio_core` as the first classroom dataset because it is structured, tabular, and numerically rich.

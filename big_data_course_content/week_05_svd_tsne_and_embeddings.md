@@ -22,6 +22,24 @@ This week teaches a crucial intellectual discipline:
 
 Students must learn to ask what notion of structure each method preserves.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "If the t-SNE plot looks like islands, the islands are real."
+>
+> Yunguri: "A map is not a treaty with reality."
+>
+> Mathias: "Then what does t-SNE preserve?"
+>
+> Yunguri: "Mostly your obligation to stop overclaiming."
+>
+> Mathias: "Then SVD is the adult in the room?"
+>
+> Yunguri: "SVD at least tells you what it is optimizing."
+>
+> Mathias: "And embeddings?"
+>
+> Yunguri: "Coordinates learned from context, which is powerful and dangerous in equal measure."
+
 ## Dataset Anchor in This Repo
 
 ### Audio matrix

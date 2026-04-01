@@ -18,6 +18,24 @@
 This week is where the course starts making actual ranking decisions.
 Students move from representation and grouping to retrieval.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "The user liked one acoustic song. I shall recommend the acoustic apocalypse."
+>
+> Yunguri: "Overspecialization is not loyalty."
+>
+> Mathias: "Then cosine similarity needs restraint?"
+>
+> Yunguri: "It needs a profile, a baseline, and adult supervision."
+>
+> Mathias: "If two tracks share tempo and mood, are they soulmates?"
+>
+> Yunguri: "They are vectors with overlap."
+>
+> Mathias: "So metadata, text, and audio features all become evidence?"
+>
+> Yunguri: "Yes. Recommendation begins when you stop worshiping a single feature family."
+
 ## Dataset Anchor in This Repo
 
 This week must be taught with methodological honesty.

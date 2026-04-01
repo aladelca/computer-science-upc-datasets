@@ -20,6 +20,24 @@
 Students now confront the limits of centroid-based reasoning.
 The week is successful only if they understand that different clustering algorithms encode different assumptions about geometry.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "DBSCAN found noise. I feel represented."
+>
+> Yunguri: "Good. Now distinguish outliers from parameter mistakes."
+>
+> Mathias: "Can epsilon be vibes-based?"
+>
+> Yunguri: "Only if the report is fiction."
+>
+> Mathias: "And `min_samples`?"
+>
+> Yunguri: "The number of neighbors required before you stop hallucinating structure."
+>
+> Mathias: "So density is local evidence, not global popularity."
+>
+> Yunguri: "Correct. One crowded region does not certify the whole map."
+
 ## Dataset Anchor in This Repo
 
 Use `pachamix_audio_core`, preferably after:

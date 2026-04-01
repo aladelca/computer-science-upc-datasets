@@ -19,6 +19,24 @@ This week changes the representation itself.
 Songs are no longer only feature vectors or matrix columns.
 They become vertices in a co-occurrence network induced by playlists.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "The table has evolved into a network. I blame ambition."
+>
+> Yunguri: "Good. Now blame your edge definition too."
+>
+> Mathias: "If two songs co-occur, they are related."
+>
+> Yunguri: "Behaviorally. Do not smuggle acoustics into the confession."
+>
+> Mathias: "So a graph is just data with explicit relationships?"
+>
+> Yunguri: "Yes, and every relationship is a modeling decision wearing innocent clothing."
+>
+> Mathias: "Then centrality depends on how we choose the links."
+>
+> Yunguri: "Finally. Topology is downstream of your assumptions."
+
 ## Dataset Anchor in This Repo
 
 ### Input layer

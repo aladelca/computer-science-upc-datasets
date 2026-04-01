@@ -22,6 +22,24 @@
 This week shifts the class from analysis to systems thinking.
 Students must learn that reproducibility is a mathematical and engineering property, not a matter of style.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "I ran every cell. That is reproducibility."
+>
+> Yunguri: "That is choreography."
+>
+> Mathias: "Then what is a pipeline?"
+>
+> Yunguri: "A workflow that survives amnesia, restarts, and other people."
+>
+> Mathias: "If the file names are manual, the process is artisanal."
+>
+> Yunguri: "And fragile."
+>
+> Mathias: "So parameters, outputs, and dependencies must be explicit."
+>
+> Yunguri: "Exactly. Good engineering is memory externalized."
+
 ## Dataset Anchor in This Repo
 
 The repo already provides a structured build workflow.

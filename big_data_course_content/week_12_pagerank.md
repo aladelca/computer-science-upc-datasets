@@ -18,6 +18,24 @@
 This week is one of the mathematically richest in the semester.
 Students must understand fixed points, stochastic matrices, and convergence, not merely call a library function.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "Teleportation in a Markov chain feels unfair."
+>
+> Yunguri: "It is regularization with theatrical flair."
+>
+> Mathias: "So the random walker is allowed drama?"
+>
+> Yunguri: "Only the mathematically justified kind."
+>
+> Mathias: "Then PageRank rewards nodes endorsed by important neighbors."
+>
+> Yunguri: "With damping, yes."
+>
+> Mathias: "So popularity alone is not enough?"
+>
+> Yunguri: "Correct. The prestige of the incoming path matters, not just the crowd size."
+
 ## Dataset Anchor in This Repo
 
 The repository's graph output is:

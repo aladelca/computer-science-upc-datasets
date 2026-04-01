@@ -29,6 +29,24 @@ PachaMix contains several mathematically distinct tasks:
 
 Each one requires different data assumptions, losses, and evaluation logic.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "If we do not know the label, can we write 'mystery' and continue?"
+>
+> Yunguri: "That is not supervised learning. That is paperwork."
+>
+> Mathias: "Then clustering is unsupervised confidence?"
+>
+> Yunguri: "No. It is structure without permission slips."
+>
+> Mathias: "And classification is pattern recognition with answer keys?"
+>
+> Yunguri: "Closer. It is function approximation under labeled evidence."
+>
+> Mathias: "So labels are expensive truth?"
+>
+> Yunguri: "Usually. Which is why wasting them should feel morally embarrassing."
+
 ## Dataset Anchor in This Repo
 
 ### Primary dataset

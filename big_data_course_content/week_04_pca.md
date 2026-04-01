@@ -18,6 +18,24 @@
 PCA is the first mathematically principled escape route from the raw feature space.
 It must be taught as an optimization result, not as a magical plotting tool.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "So PCA keeps the important directions."
+>
+> Yunguri: "Variance-rich directions, not automatically emotionally important directions."
+>
+> Mathias: "What if the most dramatic feature has low variance?"
+>
+> Yunguri: "Then it may be dramatic and still mathematically unhelpful."
+>
+> Mathias: "So PCA compresses first and asks meaning later."
+>
+> Yunguri: "Correct. It is unsupervised elegance, not prophecy."
+>
+> Mathias: "Then principal components are new axes with better posture?"
+>
+> Yunguri: "Absurd phrasing. Technically acceptable."
+
 ## Dataset Anchor in This Repo
 
 Use the numeric block of `pachamix_audio_core`.

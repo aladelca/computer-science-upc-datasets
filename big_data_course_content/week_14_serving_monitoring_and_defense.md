@@ -24,6 +24,24 @@ Students must show that they can connect:
 - operational constraints
 - product judgment
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "The recommendations looked excellent in one demo."
+>
+> Yunguri: "Then we have one anecdote and zero monitoring."
+>
+> Mathias: "Can we deploy confidence?"
+>
+> Yunguri: "Only if confidence comes with thresholds, alerts, and humility."
+>
+> Mathias: "So offline metrics do not guarantee online sanity."
+>
+> Yunguri: "They barely guarantee offline sanity if misused."
+>
+> Mathias: "Then production begins where notebook optimism ends?"
+>
+> Yunguri: "At last. A sentence fit for deployment."
+
 ## Dataset Anchor in This Repo
 
 This final week should reuse the artifacts generated or discussed across the semester:

@@ -18,6 +18,24 @@
 This week introduces behavior as a signal.
 The system stops asking only "What is this song?" and starts asking "How do songs co-occur in actual listening collections?"
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "These playlists agree on three tracks. That is friendship."
+>
+> Yunguri: "That is overlap. Friendship is a stronger claim."
+>
+> Mathias: "So sparse matrices are socially awkward?"
+>
+> Yunguri: "Exactly. They reveal very little and still demand interpretation."
+>
+> Mathias: "But co-occurrence feels magical when it works."
+>
+> Yunguri: "Because collective behavior leaks preference structure."
+>
+> Mathias: "And cold start is when the magic refuses to clock in?"
+>
+> Yunguri: "Correct. New users and new items arrive carrying no history and much arrogance."
+
 ## Dataset Anchor in This Repo
 
 ### Required processed datasets

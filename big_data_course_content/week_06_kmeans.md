@@ -22,6 +22,24 @@ The week must make one methodological principle explicit:
 
 algorithms are optimization procedures, not rituals.
 
+### Short Dialogue on the Core Concept
+
+> Mathias: "If I pick `K` confidently enough, is it scientific?"
+>
+> Yunguri: "Confidence is not a loss function."
+>
+> Mathias: "But the centroids look serious."
+>
+> Yunguri: "So do many errors."
+>
+> Mathias: "The elbow plot bent a little. I felt chosen."
+>
+> Yunguri: "The elbow plot owes you nothing."
+>
+> Mathias: "Then K-means wants spherical clusters and disciplined preprocessing?"
+>
+> Yunguri: "Exactly. At last, one sentence from you could survive peer review."
+
 ## Dataset Anchor in This Repo
 
 `pachamix_audio_core` is the correct base dataset for K-means because:
