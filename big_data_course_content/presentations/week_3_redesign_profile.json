@@ -1,0 +1,28 @@
+{
+  "version": "v1",
+  "style_direction": "Andean high-dimensional editorial comic. Keep the lecture visually polished, academic, warm, and intentional. Preserve the slide structure and all teaching meaning.",
+  "negative_constraints": [
+    "Preserve all readable text exactly.",
+    "Preserve chart geometry, equations, and labels.",
+    "Do not add logos, signatures, or watermarks.",
+    "Do not change the 16:9 slide aspect ratio.",
+    "Do not crop or remove key teaching content."
+  ],
+  "provider_defaults": {
+    "openai": {
+      "model": "gpt-image-1.5"
+    },
+    "gemini": {
+      "model": "gemini-3.1-flash-image-preview"
+    },
+    "none": {
+      "model": ""
+    }
+  },
+  "prompt_templates": {
+    "cover": "Restyle this cover slide with stronger atmosphere and refined composition. Title: {title}. Subtitle: {subtitle}. Context: {prompt_context}.",
+    "comic": "Restyle this comic dialogue slide while keeping both characters legible and expressive. Title: {title}. Subtitle: {subtitle}. Context: {prompt_context}.",
+    "chart": "Polish this instructional chart slide with better hierarchy, spacing, and subtle visual depth while preserving the exact chart content. Title: {title}. Subtitle: {subtitle}. Context: {prompt_context}.",
+    "divider": "Restyle this divider slide so it feels bold, minimal, and deliberate. Title: {title}. Subtitle: {subtitle}. Context: {prompt_context}."
+  }
+}
