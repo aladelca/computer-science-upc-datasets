@@ -21,6 +21,10 @@ The grading priority is:
 Each assessed deliverable is graded on a `20-point` scale.
 If the instructor combines these deliverables into one final project grade, the final defense and question-response component should receive the heaviest external weight because the project must be defended as an integrated technical system, not only submitted as files.
 
+Although grades may be assigned individually, the project must be defended by the group during the scheduled presentation.
+The group is responsible for defending the submitted work, the presentation, and the technical decisions behind the project.
+If the group does not defend the work in the presentation, the deliverable receives no grade.
+
 ---
 
 ## Scoring Model
