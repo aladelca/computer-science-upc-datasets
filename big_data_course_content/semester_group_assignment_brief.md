@@ -338,7 +338,7 @@ Objective:
 Required deliverables:
 
 1. one clustering experiment with K-means
-2. one clustering experiment with DBSCAN or another justified density method
+2. optional: one clustering experiment with DBSCAN or another justified density method
 3. one validation table
 - silhouette
 - inertia or density-related metrics

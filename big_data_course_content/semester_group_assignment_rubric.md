@@ -189,13 +189,14 @@ Total: `20 points`
 Objective:
 
 - segment the domain and validate whether the segmentation is meaningful
+- DBSCAN and hierarchical clustering parts are optional
 
 ## Required Deliverables and Rubric
 
 | Deliverable | Points | Excellent evidence |
 | --- | ---: | --- |
-| K-means experiment | 1.5 | K values are explored, initialization is controlled, and assumptions are discussed. |
-| DBSCAN or justified density method | 1.5 | Parameter choices are explored and linked to density assumptions. |
+| K-means experiment | 3 | K values are explored, initialization is controlled, and assumptions are discussed. |
+| DBSCAN or justified density method | 0 | Parameter choices are explored and linked to density assumptions. |
 | Validation table | 2.0 | Silhouette, inertia or density-related metrics, and interpretation limits are reported clearly. |
 | Cluster-profile analysis | 2.0 | Clusters are characterized with domain features, examples, and meaningful differences. |
 | Failure analysis | 1.5 | The team explains what did not cluster well and why. |
